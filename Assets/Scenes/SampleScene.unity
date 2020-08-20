@@ -169,11 +169,11 @@ MonoBehaviour:
   rows: 20
   cols: 20
   generations: 0
-  q: 2
+  q: 3
   k1: 10
-  k2: 11
-  k3: 11
-  k4: 11
+  k2: 12
+  k3: 10
+  k4: 12
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

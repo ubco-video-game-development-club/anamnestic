@@ -14,6 +14,8 @@ public class LevelController : MonoBehaviour
     public int rows = 20;
     public int cols = 20;
     public int generations = 1;
+    public bool autoTick = true;
+    public float tickInterval = 0.5f;
     public int q = 2;
     public int k1 = 10;
     public int k2 = 11;
@@ -21,13 +23,22 @@ public class LevelController : MonoBehaviour
     public int k4 = 11;
 
     private int[,] tiles;
+    private int currentGeneration;
 
     void Start() {
         GenerateTiles();
+        ApplyGenerations(generations);
+        StartCoroutine(TickGenerations());
     }
 
     public void NextGeneration() {
         ApplyGenerations(1);
+    }
+
+    public void ResetTiles() {
+        StopCoroutine(TickGenerations());
+        GenerateTiles();
+        StartCoroutine(TickGenerations());
     }
 
     private void GenerateTiles() {
@@ -44,9 +55,6 @@ public class LevelController : MonoBehaviour
                 tiles[i, j] = Random.Range(0, q) + 1;
             }
         }
-
-        // Apply generations
-        ApplyGenerations(generations);
     }
 
     private void ApplyGenerations(int generations) {
@@ -106,5 +114,14 @@ public class LevelController : MonoBehaviour
             }
         }
         return sum;
+    }
+
+    private IEnumerator TickGenerations() {
+        while (true) {
+            if (autoTick) {
+                yield return new WaitForSeconds(tickInterval);
+                NextGeneration();
+            }
+        }
     }
 }
