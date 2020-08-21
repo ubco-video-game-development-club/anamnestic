@@ -9,26 +9,34 @@ using UnityEngine.Tilemaps;
 
 public class LevelController : MonoBehaviour
 {
+    [Header("Tilemap Refs")]
     public Tilemap tilemap;
     public Tile blankTile;
+
+    [Header("Q-state Life")]
     public int rows = 20;
     public int cols = 20;
     public int generations = 1;
     public bool autoTick = true;
     public float tickInterval = 0.5f;
-    public int q = 2;
-    public int k1 = 10;
-    public int k2 = 11;
-    public int k3 = 11;
-    public int k4 = 11;
+    public int numStates = 2;
+    public int minUpperAddThreshold = 10;
+    public int maxUpperAddThreshold = 11;
+    public int minLowerAddThreshold = 11;
+    public int maxLowerAddThreshold = 11;
 
     private int[,] tiles;
     private int currentGeneration;
+    private int currentX;
 
     void Start() {
         GenerateTiles();
-        ApplyGenerations(generations);
         StartCoroutine(TickGenerations());
+    }
+
+    public void NextColumn() {
+        currentX++;
+        ApplyGenerations(1);
     }
 
     public void NextGeneration() {
@@ -36,7 +44,7 @@ public class LevelController : MonoBehaviour
     }
 
     public void ResetTiles() {
-        StopCoroutine(TickGenerations());
+        StopAllCoroutines();
         GenerateTiles();
         StartCoroutine(TickGenerations());
     }
@@ -52,9 +60,11 @@ public class LevelController : MonoBehaviour
                 tilemap.SetTile(tilePos, blankTile);
                 tilemap.SetTileFlags(tilePos, TileFlags.None);
                 
-                tiles[i, j] = Random.Range(0, q) + 1;
+                tiles[i, j] = Random.Range(0, numStates) + 1;
             }
         }
+
+        ApplyGenerations(generations);
     }
 
     private void ApplyGenerations(int generations) {
@@ -72,17 +82,17 @@ public class LevelController : MonoBehaviour
             for (int i = 0; i < rows; i++) {
                 for (int j = 0; j < cols; j++) {
                     float sum = sums[i, j];
-                    if (tiles[i, j] > q/2) {
-                        if (sum >= k1 && sum <= k2) {
-                            tiles[i, j] = Mathf.Clamp(tiles[i, j] + 1, 1, q);
+                    if (tiles[i, j] > numStates/2) {
+                        if (sum >= minUpperAddThreshold && sum <= maxUpperAddThreshold) {
+                            tiles[i, j] = Mathf.Clamp(tiles[i, j] + 1, 1, numStates);
                         } else {
-                            tiles[i, j] = Mathf.Clamp(tiles[i, j] - 1, 1, q);
+                            tiles[i, j] = Mathf.Clamp(tiles[i, j] - 1, 1, numStates);
                         }
                     } else {
-                        if (sum >= k3 && sum <= k4) {
-                            tiles[i, j] = Mathf.Clamp(tiles[i, j] + 1, 1, q);
+                        if (sum >= minLowerAddThreshold && sum <= maxLowerAddThreshold) {
+                            tiles[i, j] = Mathf.Clamp(tiles[i, j] + 1, 1, numStates);
                         } else {
-                            tiles[i, j] = Mathf.Clamp(tiles[i, j] - 1, 1, q);
+                            tiles[i, j] = Mathf.Clamp(tiles[i, j] - 1, 1, numStates);
                         }
                     }
                 }
@@ -93,7 +103,7 @@ public class LevelController : MonoBehaviour
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 Vector3Int tilePos = new Vector3Int(i, j, 0);
-                Color tileColor = Color.Lerp(Color.black, Color.white, (float)tiles[i, j] / q);
+                Color tileColor = Color.Lerp(Color.black, Color.white, (float)tiles[i, j] / numStates);
                 tilemap.SetColor(tilePos, tileColor);
             }
         }
@@ -107,7 +117,7 @@ public class LevelController : MonoBehaviour
         int yMax = Mathf.Min(y + 1, cols - 1);
         for (int i = xMin; i <= xMax; i++) {
             for (int j = yMin; j <= yMax; j++) {
-                if (i == 0 && j == 0) {
+                if (i == x && j == y) {
                     continue;
                 }
                 sum += tiles[i, j];
@@ -119,9 +129,9 @@ public class LevelController : MonoBehaviour
     private IEnumerator TickGenerations() {
         while (true) {
             if (autoTick) {
-                yield return new WaitForSeconds(tickInterval);
                 NextGeneration();
             }
+            yield return new WaitForSeconds(tickInterval);
         }
     }
 }
