@@ -131,6 +131,7 @@ GameObject:
   m_Component:
   - component: {fileID: 310804223}
   - component: {fileID: 310804224}
+  - component: {fileID: 310804225}
   m_Layer: 0
   m_Name: LevelController
   m_TagString: Untagged
@@ -169,14 +170,27 @@ MonoBehaviour:
   player: {fileID: 1125767437}
   rows: 10
   cols: 10
-  generations: 0
+  generations: 2
   autoTick: 0
   tickInterval: 1
-  numStates: 3
-  upperMin: 10
-  upperMax: 11
-  lowerMin: 11
-  lowerMax: 11
+  numStates: 2
+  defaultState: 1
+  upperMin: 9
+  upperMax: 10
+  lowerMin: 7
+  lowerMax: 7
+--- !u!114 &310804225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 310804222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e733a38598918db40878bef96dac2137, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &369018957
 GameObject:
   m_ObjectHideFlags: 0

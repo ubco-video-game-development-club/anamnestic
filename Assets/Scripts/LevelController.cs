@@ -13,7 +13,8 @@ public class LevelController : MonoBehaviour
     public class TileData {
         public int state;
         public int sum;
-        public bool used;
+        public bool isActive;
+        public bool isNew;
 
         public TileData(int state) {
             this.state = state;
@@ -32,6 +33,7 @@ public class LevelController : MonoBehaviour
     public bool autoTick = true;
     public float tickInterval = 0.5f;
     public int numStates = 2;
+    public int defaultState = 1;
     public int upperMin = 10;
     public int upperMax = 11;
     public int lowerMin = 11;
@@ -43,7 +45,7 @@ public class LevelController : MonoBehaviour
 
     void Start() {
         tiles = new Dictionary<Vector3Int, TileData>();
-        GenerateTiles();
+        InitializeTiles();
         StartCoroutine(TickGenerations());
         prevPlayerPos = GetPlayerPos();
     }
@@ -66,9 +68,29 @@ public class LevelController : MonoBehaviour
         StartCoroutine(TickGenerations());
     }
 
+    private void InitializeTiles() {
+        // Initialize tiles
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                Vector3Int tilePos = GetTilePos(i, j);
+                tilemap.SetTile(tilePos, blankTile);
+                tilemap.SetTileFlags(tilePos, TileFlags.None);
+
+                tiles[tilePos] = new TileData(defaultState);
+                tiles[tilePos].isNew = true;
+                tiles[tilePos].isActive = true;
+            }
+        }
+
+        UpdateTileColors();
+    }
+
     private void GenerateTiles() {
-        // Flag tiles as unused
-        tiles.ToList().ForEach(tile => tiles[tile.Key].used = false);
+        // Flag existing tiles as inactive
+        tiles.ToList().ForEach(tile => {
+            tiles[tile.Key].isActive = false;
+            tiles[tile.Key].isNew = false;
+        });
 
         // Initialize tiles
         for (int i = 0; i < rows; i++) {
@@ -80,14 +102,15 @@ public class LevelController : MonoBehaviour
                 if (!tiles.ContainsKey(tilePos)) {
                     int randState = Random.Range(0, numStates) + 1;
                     tiles[tilePos] = new TileData(randState);
+                    tiles[tilePos].isNew = true;
                 }
-                tiles[tilePos].used = true;
+                tiles[tilePos].isActive = true;
             }
         }
 
-        // Remove unused tiles
+        // Remove inactive tiles
         List<Vector3Int> unused = tiles
-            .Where(tile => !tile.Value.used)
+            .Where(tile => !tile.Value.isActive)
             .Select(tile => tile.Key)
             .ToList();
         unused.ForEach(tilePos => {
@@ -105,8 +128,8 @@ public class LevelController : MonoBehaviour
                 tiles[tile.Key].sum = GetSumOfNeighbours(tile.Key);
             });
 
-            // Apply the rules
-            tiles.ToList().ForEach(tile => {
+            // Apply the rules to new tiles
+            tiles.Where(tile => tile.Value.isNew).ToList().ForEach(tile => {
                 int state = tiles[tile.Key].state;
                 int sum = tile.Value.sum;
                 if (state > numStates/2) {
@@ -122,34 +145,63 @@ public class LevelController : MonoBehaviour
                         tiles[tile.Key].state = Mathf.Clamp(state - 1, 1, numStates);
                     }
                 }
+
+                // if (g == generations - 1) {
+                //     Debug.Log(tile.Key + ": " + state + " -> " + tiles[tile.Key].state + " (" + sum + ")");
+                // }
             });
         }
 
-        // Update tilemap
+        // Update tilemap with new tiles
+        UpdateTileColors();
+    }
+
+    private void UpdateTileColors() {
         tiles.ToList().ForEach(tile => {
-            Color tileColor = Color.Lerp(Color.black, Color.white, (float)tiles[tile.Key].state / numStates);
-            tilemap.SetColor(tile.Key, tileColor);
+            Color color;
+            int edgeSum = GetSumOfEdgeNeighbours(tile.Key);
+            int cornerSum = GetSumOfCornerNeighbours(tile.Key);
+            if (tile.Value.state == 1) {
+                if (cornerSum == 4 && edgeSum >= 6) {
+                    color = Color.black;
+                    Debug.Log("Filled");
+                } else {
+                    color = Color.white;
+                }
+            } else {
+                color = Color.black;
+            }
+            tilemap.SetColor(tile.Key, color);
         });
     }
 
     private int GetSumOfNeighbours(Vector3Int tilePos) {
-        // Determine boundaries
-        int xMin = Mathf.Max(tilePos.x - 1, 0);
-        int xMax = Mathf.Min(tilePos.x + 1, cols - 1);
-        int yMin = Mathf.Max(tilePos.y - 1, 0);
-        int yMax = Mathf.Min(tilePos.y + 1, rows - 1);
-        
-        // Calculate sum
         int sum = 0;
-        for (int i = xMin; i <= xMax; i++) {
-            for (int j = yMin; j <= yMax; j++) {
-                if (i == tilePos.x && j == tilePos.y) {
-                    continue;
-                }
-                sum += tiles[tilePos].state;
-            }
-        }
+        sum += GetSumOfEdgeNeighbours(tilePos);
+        sum += GetSumOfCornerNeighbours(tilePos);
         return sum;
+    }
+
+    private int GetSumOfEdgeNeighbours(Vector3Int tilePos) {
+        int sum = 0;
+        sum += GetStateIfExists(tilePos + Vector3Int.up);
+        sum += GetStateIfExists(tilePos + Vector3Int.down);
+        sum += GetStateIfExists(tilePos + Vector3Int.left);
+        sum += GetStateIfExists(tilePos + Vector3Int.right);
+        return sum;
+    }
+
+    private int GetSumOfCornerNeighbours(Vector3Int tilePos) {
+        int sum = 0;
+        sum += GetStateIfExists(tilePos + new Vector3Int(1, 1, 0));
+        sum += GetStateIfExists(tilePos + new Vector3Int(1, -1, 0));
+        sum += GetStateIfExists(tilePos + new Vector3Int(-1, 1, 0));
+        sum += GetStateIfExists(tilePos + new Vector3Int(-1, -1, 0));
+        return sum;
+    }
+
+    private int GetStateIfExists(Vector3Int tilePos) {
+        return tiles.ContainsKey(tilePos) ? tiles[tilePos].state : 0;
     }
 
     private Vector3Int GetPlayerPos() {
