@@ -174,9 +174,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 5a7050d40bcf2904081ae5be9749b12e, type: 2}
   - {fileID: 11400000, guid: 448ca5e40ae295340a3dfdabb5a0b6ed, type: 2}
   - {fileID: 11400000, guid: 08f40bb51c7728b4c9aa761e76c5c4b9, type: 2}
-  - {fileID: 11400000, guid: 0720ecf30c5f91640922275baf43fdf1, type: 2}
-  - {fileID: 11400000, guid: 5c4e2678cecbe87498de932ca07d56d7, type: 2}
+  pitTiles:
+  - {fileID: 11400000, guid: c15f64fb00e3d48428f490774ddd6aa4, type: 2}
   - {fileID: 11400000, guid: 55b83c3a471a0c446a3aa301ae38bc76, type: 2}
+  - {fileID: 11400000, guid: 5c4e2678cecbe87498de932ca07d56d7, type: 2}
+  - {fileID: 11400000, guid: 0720ecf30c5f91640922275baf43fdf1, type: 2}
+  - {fileID: 11400000, guid: 3b452a80d5663284291b04f3d7c8e16c, type: 2}
   player: {fileID: 1125767437}
   rows: 10
   cols: 10

@@ -9,7 +9,7 @@ using UnityEngine.Tilemaps;
 // https://www.hermetic.ch/compsci/cellular_automata_algorithms.htm
 
 public enum TileType {
-    VOID, PIT
+    EMPTY, VOID, PIT
 }
 
 public class TileData {
@@ -17,6 +17,7 @@ public class TileData {
     public int sum;
     public bool isActive;
     public bool isNew;
+    public bool isChanged;
     public TileType tileType;
 
     public TileData(int state) {
@@ -32,20 +33,22 @@ public class LevelController : MonoBehaviour
     public Tilemap tilemap;
     public Tile blankTile;
     public List<Tile> voidTiles;
+    [Tooltip("1 = Top Edge, 2 = Right Edge, 4 = Top Corner")]
+    public Tile[] pitTiles;
     public Player player;
 
     [Header("Q-state Life")]
     public int rows = 8;
     public int cols = 8;
-    public int generations = 1;
+    public int generations = 2;
     public bool autoTick = true;
     public float tickInterval = 0.5f;
     public int numStates = 2;
     public int defaultState = 1;
-    public int upperMin = 10;
-    public int upperMax = 11;
-    public int lowerMin = 11;
-    public int lowerMax = 11;
+    public int upperMin = 9;
+    public int upperMax = 10;
+    public int lowerMin = 7;
+    public int lowerMax = 7;
 
     private Dictionary<Vector3Int, TileData> tiles;
     private Vector3Int prevPlayerPos;
@@ -144,24 +147,25 @@ public class LevelController : MonoBehaviour
 
             // Apply the rules to new tiles
             tiles.Where(tile => tile.Value.isNew).ToList().ForEach(tile => {
-                int state = tiles[tile.Key].state;
+                Vector3Int tilePos = tile.Key;
+                int state = tiles[tilePos].state;
                 int sum = tile.Value.sum;
                 if (state > numStates/2) {
                     if (sum >= upperMin && sum <= upperMax) {
-                        tiles[tile.Key].state = Mathf.Clamp(state + 1, 1, numStates);
+                        tiles[tilePos].state = Mathf.Clamp(state + 1, 1, numStates);
                     } else {
-                        tiles[tile.Key].state = Mathf.Clamp(state - 1, 1, numStates);
+                        tiles[tilePos].state = Mathf.Clamp(state - 1, 1, numStates);
                     }
                 } else {
                     if (sum >= lowerMin && sum <= lowerMax) {
-                        tiles[tile.Key].state = Mathf.Clamp(state + 1, 1, numStates);
+                        tiles[tilePos].state = Mathf.Clamp(state + 1, 1, numStates);
                     } else {
-                        tiles[tile.Key].state = Mathf.Clamp(state - 1, 1, numStates);
+                        tiles[tilePos].state = Mathf.Clamp(state - 1, 1, numStates);
                     }
                 }
 
                 // if (g == generations - 1) {
-                //     Debug.Log(tile.Key + ": " + state + " -> " + tiles[tile.Key].state + " (" + sum + ")");
+                //     Debug.Log(tilePos + ": " + state + " -> " + tiles[tilePos].state + " (" + sum + ")");
                 // }
             });
         }
@@ -171,32 +175,50 @@ public class LevelController : MonoBehaviour
     }
 
     private void UpdateTilemap() {
+        // Assign tile types
         tiles.ToList().ForEach(tile => {
-            Tile selectedTile;
-            TileType prevType = tiles[tile.Key].tileType;
-            int edgeSum = GetSumOfEdgeNeighbours(tile.Key);
-            int cornerSum = GetSumOfCornerNeighbours(tile.Key);
-            if (tile.Value.state == 1) { // 1 == void, 2 == pit
+            Vector3Int tilePos = tile.Key;
+
+            // Store previous type to check if changed
+            TileType prevType = tiles[tilePos].tileType;
+
+            // Get edges and corners to determine special cases
+            int edgeSum = GetSumOfEdgeNeighbours(tilePos);
+            int cornerSum = GetSumOfCornerNeighbours(tilePos);
+
+            // Assign tile type based on state
+            if (tile.Value.state == 1) {
                 if (cornerSum == 4 && edgeSum >= 6) {
-                    selectedTile = blankTile;
-                    tiles[tile.Key].tileType = TileType.PIT;
+                    tiles[tilePos].tileType = TileType.PIT;
                 } else {
-                    selectedTile = GetRandomTile(voidTiles);
-                    tiles[tile.Key].tileType = TileType.VOID;
+                    tiles[tilePos].tileType = TileType.VOID;
                 }
             } else {
-                // if (edgeSum == 4) {
-                //     selectedTile = GetRandomTile(voidTiles);
-                //     tiles[tile.Key].tileType = TileType.VOID;
-                // } else {
-                    selectedTile = blankTile;
-                    tiles[tile.Key].tileType = TileType.PIT;
-                // }
+                tiles[tilePos].tileType = TileType.PIT;
+            }
+
+            // Flag the tile as changed
+            tiles[tilePos].isChanged = tiles[tilePos].tileType != prevType;
+        });
+
+        // Set tilemap tiles based on tile type
+        tiles.ToList().ForEach(tile => {
+            Vector3Int tilePos = tile.Key;
+
+            // Get tile based on type
+            Tile selectedTile = null;
+            switch (tiles[tilePos].tileType) {
+                case TileType.PIT: 
+                    selectedTile = GetPitTile(tilePos);
+                    break;
+                case TileType.VOID:
+                    selectedTile = GetRandomTile(voidTiles);
+                    break;
             }
 
             // Only set the tile if this tile is empty or has changed type
-            if (!tilemap.GetTile(tile.Key) || tiles[tile.Key].tileType != prevType) {
-                tilemap.SetTile(tile.Key, selectedTile);
+            if (!tilemap.GetTile(tilePos) || tiles[tilePos].isChanged) {
+                tilemap.SetTile(tilePos, selectedTile);
             }
         });
     }
@@ -230,6 +252,10 @@ public class LevelController : MonoBehaviour
         return tiles.ContainsKey(tilePos) ? tiles[tilePos].state : 0;
     }
 
+    private TileType GetTileTypeIfExists(Vector3Int tilePos) {
+        return tiles.ContainsKey(tilePos) ? tiles[tilePos].tileType : TileType.EMPTY;
+    }
+
     private Vector3Int GetPlayerPos() {
         return tilemap.WorldToCell(player.transform.position);
     }
@@ -241,6 +267,26 @@ public class LevelController : MonoBehaviour
 
     private Tile GetRandomTile(List<Tile> tileList) {
         return tileList[Random.Range(0, tileList.Count)];
+    }
+
+    private Tile GetPitTile(Vector3Int tilePos) {
+        // Get the types of the top three adjacent tiles
+        bool isTopEdgeVoid = GetTileTypeIfExists(tilePos + Vector3Int.up) == TileType.VOID;
+        bool isRightEdgeVoid = GetTileTypeIfExists(tilePos + Vector3Int.right) == TileType.VOID;
+        bool isTopCornerVoid = GetTileTypeIfExists(tilePos + new Vector3Int(1, 1, 0)) == TileType.VOID;
+
+        // Assign a pit tile based on adjacent tiles
+        if (isTopEdgeVoid && isRightEdgeVoid) {
+            return pitTiles[3];
+        } else if (isTopEdgeVoid) {
+            return pitTiles[1];
+        } else if (isRightEdgeVoid) {
+            return pitTiles[2];
+        } else if (isTopCornerVoid) {
+            return pitTiles[4];
+        } else {
+            return pitTiles[0];
+        }
     }
 
     private IEnumerator TickGenerations() {
