@@ -30,16 +30,18 @@ public class LevelController : MonoBehaviour
     public static LevelController instance;
 
     [Header("Tilemap Refs")]
-    public Tilemap tilemap;
+    public Tilemap groundTilemap;
+    public Tilemap colliderTilemap;
     public Tile blankTile;
     public List<Tile> voidTiles;
-    [Tooltip("1 = Top Edge, 2 = Right Edge, 4 = Top Corner")]
+    [Tooltip("1 = Top Left Edge, 2 = Top Right Edge, 4 = Top Corner")]
     public Tile[] pitTiles;
     public Player player;
 
-    [Header("Q-state Life")]
-    public int rows = 8;
-    public int cols = 8;
+    [Header("View Settings")]
+    public int viewDistance = 5;
+
+    [Header("Terrain State Generation")]
     public int generations = 2;
     public bool autoTick = true;
     public float tickInterval = 0.5f;
@@ -93,14 +95,11 @@ public class LevelController : MonoBehaviour
 
     private void InitializeTiles() {
         // Initialize tiles
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                Vector3Int tilePos = GetTilePos(i, j);
-                tiles[tilePos] = new TileData(defaultState);
-                tiles[tilePos].isNew = true;
-                tiles[tilePos].isActive = true;
-            }
-        }
+        GetTilePositionsInRange().ForEach(tilePos => {
+            tiles[tilePos] = new TileData(defaultState);
+            tiles[tilePos].isNew = true;
+            tiles[tilePos].isActive = true;
+        });
 
         UpdateTilemap();
     }
@@ -113,17 +112,14 @@ public class LevelController : MonoBehaviour
         });
 
         // Initialize tiles
-        for (int i = 0; i < rows; i++) {
-            for (int j = 0; j < cols; j++) {
-                Vector3Int tilePos = GetTilePos(i, j);
-                if (!tiles.ContainsKey(tilePos)) {
-                    int randState = Random.Range(0, numStates) + 1;
-                    tiles[tilePos] = new TileData(randState);
-                    tiles[tilePos].isNew = true;
-                }
-                tiles[tilePos].isActive = true;
+        GetTilePositionsInRange().ForEach(tilePos => {
+            if (!tiles.ContainsKey(tilePos)) {
+                int randState = Random.Range(0, numStates) + 1;
+                tiles[tilePos] = new TileData(randState);
+                tiles[tilePos].isNew = true;
             }
-        }
+            tiles[tilePos].isActive = true;
+        });
 
         // Remove inactive tiles
         List<Vector3Int> unused = tiles
@@ -132,7 +128,8 @@ public class LevelController : MonoBehaviour
             .ToList();
         unused.ForEach(tilePos => {
             tiles.Remove(tilePos);
-            tilemap.SetTile(tilePos, null);
+            groundTilemap.SetTile(tilePos, null);
+            colliderTilemap.SetTile(tilePos, null);
         });
 
         ApplyGenerations(generations);
@@ -197,28 +194,37 @@ public class LevelController : MonoBehaviour
                 tiles[tilePos].tileType = TileType.PIT;
             }
 
-            // Flag the tile as changed
-            tiles[tilePos].isChanged = tiles[tilePos].tileType != prevType;
+            // Flag the tile as changed (pit tiles always update)
+            tiles[tilePos].isChanged = 
+                tiles[tilePos].tileType != prevType ||
+                tiles[tilePos].tileType == TileType.PIT;
         });
 
         // Set tilemap tiles based on tile type
         tiles.ToList().ForEach(tile => {
             Vector3Int tilePos = tile.Key;
 
-            // Get tile based on type
+            // Get tile and tilemap based on type
+            Tilemap targetTilemap = null;
+            Tilemap otherTilemap = null;
             Tile selectedTile = null;
             switch (tiles[tilePos].tileType) {
                 case TileType.PIT: 
+                    targetTilemap = colliderTilemap;
+                    otherTilemap = groundTilemap;
                     selectedTile = GetPitTile(tilePos);
                     break;
                 case TileType.VOID:
+                    targetTilemap = groundTilemap;
+                    otherTilemap = colliderTilemap;
                     selectedTile = GetRandomTile(voidTiles);
                     break;
             }
 
-            // Only set the tile if this tile is empty or has changed type
-            if (!tilemap.GetTile(tilePos) || tiles[tilePos].isChanged) {
-                tilemap.SetTile(tilePos, selectedTile);
+            // Only update the tile if it's empty or has changed
+            if (!targetTilemap.GetTile(tilePos) || tiles[tilePos].isChanged) {
+                targetTilemap.SetTile(tilePos, selectedTile);
+                otherTilemap.SetTile(tilePos, null);
             }
         });
     }
@@ -257,12 +263,21 @@ public class LevelController : MonoBehaviour
     }
 
     private Vector3Int GetPlayerPos() {
-        return tilemap.WorldToCell(player.transform.position);
+        return groundTilemap.WorldToCell(player.transform.position);
     }
 
-    private Vector3Int GetTilePos(int x, int y) {
-        Vector3Int origin = GetPlayerPos() - new Vector3Int(cols / 2, rows / 2, 0);
-        return origin + new Vector3Int(x, y, 0);
+    private List<Vector3Int> GetTilePositionsInRange() {
+        Vector3Int playerPos = GetPlayerPos();
+        List<Vector3Int> tilePositions = new List<Vector3Int>();
+        for (int i = -viewDistance; i < viewDistance; i++) {
+            for (int j = -viewDistance; j < viewDistance; j++) {
+                Vector3Int tilePos = playerPos + new Vector3Int(i, j, 0);
+                if (Vector3Int.Distance(playerPos, tilePos) < viewDistance) {
+                    tilePositions.Add(tilePos);
+                }
+            }
+        }
+        return tilePositions;
     }
 
     private Tile GetRandomTile(List<Tile> tileList) {
@@ -271,19 +286,25 @@ public class LevelController : MonoBehaviour
 
     private Tile GetPitTile(Vector3Int tilePos) {
         // Get the types of the top three adjacent tiles
-        bool isTopEdgeVoid = GetTileTypeIfExists(tilePos + Vector3Int.up) == TileType.VOID;
-        bool isRightEdgeVoid = GetTileTypeIfExists(tilePos + Vector3Int.right) == TileType.VOID;
+        bool isTopLeftEdgeVoid = GetTileTypeIfExists(tilePos + Vector3Int.up) == TileType.VOID;
+        bool isTopRightEdgeVoid = GetTileTypeIfExists(tilePos + Vector3Int.right) == TileType.VOID;
         bool isTopCornerVoid = GetTileTypeIfExists(tilePos + new Vector3Int(1, 1, 0)) == TileType.VOID;
 
         // Assign a pit tile based on adjacent tiles
-        if (isTopEdgeVoid && isRightEdgeVoid) {
+        if (isTopLeftEdgeVoid && isTopRightEdgeVoid) {
             return pitTiles[3];
-        } else if (isTopEdgeVoid) {
-            return pitTiles[1];
-        } else if (isRightEdgeVoid) {
-            return pitTiles[2];
         } else if (isTopCornerVoid) {
-            return pitTiles[4];
+            if (isTopLeftEdgeVoid) {
+                return pitTiles[5];
+            } else if (isTopRightEdgeVoid) {
+                return pitTiles[6];
+            } else {
+                return pitTiles[4];
+            }
+        } else if (isTopLeftEdgeVoid) {
+            return pitTiles[1];
+        } else if (isTopRightEdgeVoid) {
+            return pitTiles[2];
         } else {
             return pitTiles[0];
         }
