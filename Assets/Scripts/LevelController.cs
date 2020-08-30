@@ -29,6 +29,8 @@ public class LevelController : MonoBehaviour
 {
     public static LevelController instance;
 
+    public const float isoToWorldRatio = 1.78885f;
+
     [Header("Tilemap Refs")]
     public Tilemap groundTilemap;
     public Tilemap colliderTilemap;
@@ -39,7 +41,8 @@ public class LevelController : MonoBehaviour
     public Player player;
 
     [Header("View Settings")]
-    public int viewDistance = 5;
+    public int viewDistance = 9;
+    public int renderBuffer = 2;
 
     [Header("Terrain State Generation")]
     public int generations = 2;
@@ -65,7 +68,7 @@ public class LevelController : MonoBehaviour
     }
 
     void Start() {
-        tiles = new Dictionary<Vector3Int, TileData>();
+        InitializeTilemaps();
         InitializeTiles();
         StartCoroutine(TickGenerations());
         prevPlayerPos = GetPlayerPos();
@@ -93,7 +96,16 @@ public class LevelController : MonoBehaviour
         return tiles.ContainsKey(tilePos) ? tiles[tilePos] : null;
     }
 
+    private void InitializeTilemaps() {
+        groundTilemap.GetComponent<TilemapRenderer>().material.SetFloat("_ViewDistance", IsoToWorld(viewDistance));
+        groundTilemap.GetComponent<TilemapRenderer>().material.SetFloat("_RenderBuffer", IsoToWorld(renderBuffer));
+        colliderTilemap.GetComponent<TilemapRenderer>().material.SetFloat("_ViewDistance", IsoToWorld(viewDistance));
+        colliderTilemap.GetComponent<TilemapRenderer>().material.SetFloat("_RenderBuffer", IsoToWorld(renderBuffer));
+    }
+
     private void InitializeTiles() {
+        tiles = new Dictionary<Vector3Int, TileData>();
+
         // Initialize tiles
         GetTilePositionsInRange().ForEach(tilePos => {
             tiles[tilePos] = new TileData(defaultState);
@@ -268,11 +280,12 @@ public class LevelController : MonoBehaviour
 
     private List<Vector3Int> GetTilePositionsInRange() {
         Vector3Int playerPos = GetPlayerPos();
+        int tileRange = viewDistance + renderBuffer;
         List<Vector3Int> tilePositions = new List<Vector3Int>();
-        for (int i = -viewDistance; i < viewDistance; i++) {
-            for (int j = -viewDistance; j < viewDistance; j++) {
+        for (int i = -tileRange; i < tileRange; i++) {
+            for (int j = -tileRange; j < tileRange; j++) {
                 Vector3Int tilePos = playerPos + new Vector3Int(i, j, 0);
-                if (Vector3Int.Distance(playerPos, tilePos) < viewDistance) {
+                if (Vector3Int.Distance(playerPos, tilePos) < tileRange) {
                     tilePositions.Add(tilePos);
                 }
             }
@@ -308,6 +321,14 @@ public class LevelController : MonoBehaviour
         } else {
             return pitTiles[0];
         }
+    }
+
+    private float IsoToWorld(float isoVal) {
+        return isoVal / isoToWorldRatio;
+    }
+
+    private float WorldToIso(float worldVal) {
+        return worldVal * isoToWorldRatio;
     }
 
     private IEnumerator TickGenerations() {
