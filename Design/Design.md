@@ -20,43 +20,52 @@ The game starts with the protagonist crossing a bridge and entering the void wal
 
 After choosing an option, the player continues walking.
 
-Second meeting with the spirit guide. The NPC, “Tell me what’s happening.”
+#### Second meeting with the spirit guide. 
+The NPC, “Tell me what’s happening.”
 
 Based on the previously chosen option, the protagonist automatically gives one of the following answers:
 1.	Fisherman’s answer. The more ruthlessly the sun burns my shoulders, the harder I grit my teeth. As I close my eyes in delirium, I shed tears at my loneliness and dream about wealth. Suddenly, I hear something hit the boat with a thump. I lean forward and pick up a bottle with a folded paper inside. I open the bottle, unwrap the moldy paper, and discover a pirate treasure map.
 2.	Innkeeper’s answer. I shovel dust, spider webs, and dead moths from under the bed. I’m like a moth trapped in the web of duties with no one to support me. Unexpectedly the next move of my besom uncovers a rolled paper. Intrigued, I pick it up and soon find out that it’s a pirate treasure map. 
 3.	Farmer’s answer. I make a stop to rest and turn around to look at my ramshackle house. Nobody is waiting for me there. How great it’d be to at least have some riches! The blinding sun brings tears to my eyes, and, avoiding the unbearable light, I look down. Something is glittering in the crease left by the plough. I kneel and start digging with my hands. When I realize that it’s a small chest, I forget about my exhaustion and run to the house to get a shovel. Soon I open the chest and find a pirate treasure map inside.
 4.	Merchant’s answer. I’m feeling sad. My life passes by in loneliness, in conversations with numbers that signify my revenue and that are always small. A customer wearing a black hood approaches me. The stranger says, “I’m buying these clothes from you. Here is my payment. It’ll be more than enough.” I leap up. I’m furious. “Come back, thief! You have to pay!” I chase the stranger, but as I run out of my shop, I only see a faceless crowd. I come back to my table and look at the paper that the stranger left. It’s a pirate treasure map.
+
 The 1st level ends after 2 meetings with the spirit guide.
 
 ## 2nd level
-First meeting with the spirit guide. The NPC, “What do you do after discovering the map?”
+#### First meeting with the spirit guide. 
+The NPC, “What do you do after discovering the map?”
 
 The protagonist, “I’m perplexed. At first, I don’t believe that the treasure is real. I leave the map on the dusty windowsill and carry on with my daily routine. Yet, the dreams about chests filled with gold start haunting me. In the evening, I light a candle, put the map on the table, and start examining the route to the island.”
 
-Second meeting with the spirit guide. The NPC, “Are you planning to find the treasure?”
+#### Second meeting with the spirit guide. 
+The NPC, “Are you planning to find the treasure?”
 
 The protagonist, “I realize that the island is not far away. I only need to catch the next ship that heads south. I plan to steal a lifeboat during the night and get to the island. The only things left will be getting into the cave and finding the chest with gold.”
 
-Third meeting with the spirit guide. The NPC, “Do you decide to follow your dreams or leave things as they are?”
+#### Third meeting with the spirit guide. 
+The NPC, “Do you decide to follow your dreams or leave things as they are?”
 
 The protagonist, “As I part with my savings the next morning to buy a ticket, I’m full of doubts. What if I don’t find any treasure? What if the storm starts while I’ll be sailing to the island in the small lifeboat? What if I get trapped on the island without any provisions?”
 
-Fourth meeting with the spirit guide. The NPC, “Do you succeed in conquering your doubts?”
+#### Fourth meeting with the spirit guide. 
+The NPC, “Do you succeed in conquering your doubts?”
 
 The protagonist, “Yes! I spend several days onboard a passenger ship. One night when the moon is bright, I launch a cutter. Then I dive from the deck into the sea and climb into the cutter. I sail to the island.”
 
-Fifth meeting with the spirit guide. The NPC, “Do you succeed in finding the treasure and bringing it home?”
+#### Fifth meeting with the spirit guide. 
+The NPC, “Do you succeed in finding the treasure and bringing it home?”
 
 The protagonist, “Unfortunately, I don’t. As I arrive in the cave, I find out that steep slopes that terminate the cave’s passages make it practically impossible for me to bring the chest with gold out from the cave. I conclude that I need a crew and climbing equipment.”
 
 ## 3rd level
 
-First meeting with the spirit guide. The NPC, “What’s going on?”
+#### First meeting with the spirit guide. 
+The NPC, “What’s going on?”
 
 The protagonist, “I decide not to share the treasure with the crew because I was the one to find the map. I know four people whom I might ask for help. Yet, the fewer people know about the treasure, the better. So, I’ll pick two members for my team.”
 
-Second meeting with the spirit guide. The NPC, “What team members do you choose?”
+#### Second meeting with the spirit guide. 
+The NPC, “What team members do you choose?”
 
 The player must choose two out of four individuals for the team. 
 1.	Jim - a doctor
@@ -64,38 +73,45 @@ The player must choose two out of four individuals for the team.
 3.	Solveig - a nurse
 4.	Ingrid - a daughter of a wealthy farmer
 
-Third meeting with the spirit guide. The NPC, “What do you do afterward?”
+#### Third meeting with the spirit guide. 
+The NPC, “What do you do afterward?”
 
 The protagonist, “We meet in my shack. I collect everyone’s savings, which is enough to buy the necessary equipment (ropes, anchors, hammers, a cart) and rent a yacht for one month in the sea. We go to the port and choose a yacht with a diesel power plant for our voyage.”
 
 ## 4th level
-First meeting with the spirit guide. The NPC, “How does the voyage go?”
+#### First meeting with the spirit guide. 
+The NPC, “How does the voyage go?”
 
 The protagonist, “It goes smooth if one doesn’t count the seasickness that affects all my crew members. We take turns in navigation and driving the boat. Sometimes we share personal stories. In the evenings, when I look at the sunset and smoke my pipe, I start doubting my decision to cheat my teammates out of their shares.”
 
-Second meeting with the spirit guide. The NPC, “What happens when you arrive on the island?”
+#### Second meeting with the spirit guide. 
+The NPC, “What happens when you arrive on the island?”
 
 The protagonist, “We embark on our journey into the cave. After little time navigating narrow passages, we get covered in mud. We climb down steep slopes using ropes and anchors, cross natural bridges, and move across lakes filled with cold water.”
 
-Third meeting with the spirit guide. The NPC, “Go ahead with your story.”
+#### Third meeting with the spirit guide. 
+The NPC, “Go ahead with your story.”
 
 The protagonist, “We discover the chest with treasures in a crystal pool. My hands start shaking. I open the chest. With my eyes wide open, I see that the chest is full of golden pieces of jewelry and gemstones. Yet, I don’t feel happy. I’m scared of the changes that await me.”
 
-Fourth meeting with the spirit guide. The NPC, “Do you transport the chest to the shore?”
+#### Fourth meeting with the spirit guide. 
+The NPC, “Do you transport the chest to the shore?”
 
 The protagonist, “Yes, but first, we share our plans on how to spend the fortune. As I tell my teammates my dreams of becoming an entrepreneur and gaining wealth, and living in a rich house, I feel my doubts increasing. I don’t know why…”
 
-Fifth meeting with the spirit guide. The NPC, “I’m sure you’ll be able to understand why.”
+#### Fifth meeting with the spirit guide. 
+The NPC, “I’m sure you’ll be able to understand why.”
 
 The protagonist, “I hope so. For now, we load the chest onto the cart. We take turns pushing the cart through the cave passages. I’d say the hardest challenge is lifting the chest. To do the lifting, we secure the chest with ropes, then climb up a steep slope, and pull the chest up with all our efforts. The way back is a nightmare, and only hopes for the future brighten it.”
 
 ## 5th level
-
-First meeting with the spirit guide. The NPC, “Tell me what’s going on.”
+#### First meeting with the spirit guide. 
+The NPC, “Tell me what’s going on.”
 
 The protagonist, “Exhausted after the long travel through the cave, my teammates and I lie down on the shore. My comrades soon fall asleep. I sit up and look at the chest with treasures. I am not sure what to do…” 
 
-Second meeting with the spirit guide. The NPC, “What’s on your mind?”
+#### Second meeting with the spirit guide. 
+The NPC, “What’s on your mind?”
 
 The protagonist, “Well, I’m torn between four possible actions.” 
 
@@ -109,7 +125,8 @@ The player can choose what to do next.
 ## 6th level
 The character crosses the bridge. 
 
-First meeting is with the spirit guide. The NPC, “Let’s discuss your experience.”
+#### First meeting is with the spirit guide. 
+The NPC, “Let’s discuss your experience.”
 
 The protagonist: 
 #### If the first ending was chosen, the character has these options:
@@ -137,11 +154,13 @@ The protagonist:
 5)	Perhaps, I shouldn’t have given away the treasures. I regret this decision now.
 6)	I don’t think this story can teach me anything. The therapy session was useless. I want my money back!
 
-Second meeting is with the skeptic. The skeptic, “Do you notice any anachronisms or misconceptions in your story?”
+#### Second meeting is with the skeptic. 
+The skeptic, “Do you notice any anachronisms or misconceptions in your story?”
 
 The protagonist, “Alright, I’m still not sure what century I’ve just visited. It seems to be the early 1900-s. I am not sure if you could actually rent a yacht back then. I'm not sure if I could launch a cutter from a passenger ship and escape unnoticed. I’m also confused about what country I lived in. Also, perhaps, pirate treasure maps are a misconception.”
 
-Third meeting is with the skeptic. The skeptic, “So, do you believe in your past life?”
+#### Third meeting is with the skeptic. 
+The skeptic, “So, do you believe in your past life?”
 #### The character can choose what to say:
 1)	Stop bothering me with your skepticism! I enjoyed the adventure. I don’t care if it was real or just a fantasy. 
 2)	Well, I guess, it was all made up.
