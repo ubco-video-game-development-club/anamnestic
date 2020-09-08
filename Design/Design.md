@@ -29,8 +29,6 @@ Based on the previously chosen option, the protagonist automatically gives one o
 3.	Farmer’s answer. I make a stop to rest and turn around to look at my ramshackle house. Nobody is waiting for me there. How great it’d be to at least have some riches! The blinding sun brings tears to my eyes, and, avoiding the unbearable light, I look down. Something is glittering in the crease left by the plough. I kneel and start digging with my hands. When I realize that it’s a small chest, I forget about my exhaustion and run to the house to get a shovel. Soon I open the chest and find a pirate treasure map inside.
 4.	Merchant’s answer. I’m feeling sad. My life passes by in loneliness, in conversations with numbers that signify my revenue and that are always small. A customer wearing a black hood approaches me. The stranger says, “I’m buying these clothes from you. Here is my payment. It’ll be more than enough.” I leap up. I’m furious. “Come back, thief! You have to pay!” I chase the stranger, but as I run out of my shop, I only see a faceless crowd. I come back to my table and look at the paper that the stranger left. It’s a pirate treasure map.
 
-The 1st level ends after 2 meetings with the spirit guide.
-
 ## 2nd level
 #### First meeting with the spirit guide. 
 The NPC, “What do you do after discovering the map?”
